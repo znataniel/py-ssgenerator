@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -51,6 +51,86 @@ class TestLeafNode(unittest.TestCase):
     def test_to_html_no_tag(self):
         node = LeafNode(None, "Hello, world!")
         self.assertEqual(node.to_html(), "Hello, world!")
+
+    if __name__ == "__main__":
+        unittest.main()
+
+
+class TestParentNode(unittest.TestCase):
+    def test_to_html(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ],
+        )
+        self.assertEqual(
+            node.to_html(),
+            "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>",
+        )
+
+    def test_to_html_1nested(self):
+        node = ParentNode(
+            "p",
+            [LeafNode("b", "Bold"), ParentNode("div", [LeafNode("p", "Inner para")])],
+        )
+        self.assertEqual(
+            node.to_html(), "<p><b>Bold</b><div><p>Inner para</p></div></p>"
+        )
+
+    def test_to_html_2nested_with_props(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold"),
+                ParentNode(
+                    "div",
+                    [
+                        LeafNode("p", "Inner para"),
+                        ParentNode(
+                            "div",
+                            [LeafNode("i", "italic", {"id": "ita"})],
+                            {"id": "itaParent"},
+                        ),
+                    ],
+                ),
+            ],
+        )
+        self.assertEqual(
+            node.to_html(),
+            '<p><b>Bold</b><div><p>Inner para</p><div id="itaParent"><i id="ita">italic</i></div></div></p>',
+        )
+
+    def test_to_html_no_tag1(self):
+        node = ParentNode(
+            None,
+            [LeafNode("b", "Bold"), ParentNode("div", [LeafNode("p", "Inner para")])],
+        )
+        self.assertRaises(ValueError, node.to_html)
+
+    def test_to_html_no_tag2(self):
+        node = ParentNode(
+            "p",
+            [LeafNode("b", "Bold"), ParentNode("", [LeafNode("p", "Inner para")])],
+        )
+        self.assertRaises(ValueError, node.to_html)
+
+    def test_to_html_no_children1(self):
+        node = ParentNode(
+            "p",
+            [LeafNode("b", "Bold"), ParentNode("", [])],
+        )
+        self.assertRaises(ValueError, node.to_html)
+
+    def test_to_html_no_children2(self):
+        node = ParentNode(
+            "p",
+            None,
+        )
+        self.assertRaises(ValueError, node.to_html)
 
     if __name__ == "__main__":
         unittest.main()
