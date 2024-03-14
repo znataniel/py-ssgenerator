@@ -46,8 +46,10 @@ class ParentNode(HTMLNode):
     def to_html(self):
         if self.tag is None or self.tag == "":
             raise ValueError("HTML tag not provided")
-        if self.children is None or not len(self.children):
+        if self.children is None:
             raise ValueError("Element has no children")
+        # if self.children is None or not len(self.children):
+        #     raise ValueError("Element has no children")
         children_str = ""
         for child in self.children:
             children_str += child.to_html()
