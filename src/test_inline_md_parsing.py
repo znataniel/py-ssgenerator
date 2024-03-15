@@ -9,7 +9,7 @@ from textnode import (
     text_type_link,
     text_type_image,
 )
-from markdown_parsing import split_nodes_delimiter
+from inline_md_parsing import split_nodes_delimiter
 
 
 class TestSplitNodesFn(unittest.TestCase):
