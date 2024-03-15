@@ -9,7 +9,11 @@ from textnode import (
     text_type_link,
     text_type_image,
 )
-from inline_md_parsing import split_nodes_delimiter
+from inline_md_parsing import (
+    split_nodes_delimiter,
+    extract_markdown_links,
+    extract_markdown_images,
+)
 
 
 class TestSplitNodesFn(unittest.TestCase):
@@ -134,6 +138,27 @@ class TestSplitNodesFn(unittest.TestCase):
             "__",
             text_type_bold,
         )
+
+    if __name__ == "__main__":
+        unittest.main()
+
+
+class TestExtractImgLinkFn(unittest.TestCase):
+    def test_img_1(self):
+        text = "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and ![another](https://i.imgur.com/dfsdkjfd.png)"
+        expected_output = [
+            ("image", "https://i.imgur.com/zjjcJKZ.png"),
+            ("another", "https://i.imgur.com/dfsdkjfd.png"),
+        ]
+        self.assertEqual(expected_output, extract_markdown_images(text))
+
+    def test_link_1(self):
+        text = "This is text with a [link](https://www.example.com) and [another](https://www.example.com/another)"
+        expected_output = [
+            ("link", "https://www.example.com"),
+            ("another", "https://www.example.com/another"),
+        ]
+        self.assertEqual(expected_output, extract_markdown_links(text))
 
     if __name__ == "__main__":
         unittest.main()
