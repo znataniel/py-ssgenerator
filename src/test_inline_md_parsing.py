@@ -13,6 +13,8 @@ from inline_md_parsing import (
     split_nodes_delimiter,
     extract_markdown_links,
     extract_markdown_images,
+    split_nodes_image,
+    split_nodes_link,
 )
 
 
@@ -159,6 +161,88 @@ class TestExtractImgLinkFn(unittest.TestCase):
             ("another", "https://www.example.com/another"),
         ]
         self.assertEqual(expected_output, extract_markdown_links(text))
+
+    if __name__ == "__main__":
+        unittest.main()
+
+
+class TestSplitNodesImg(unittest.TestCase):
+    def test_equal_two_img(self):
+        node = TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
+            text_type_text,
+        )
+        expected = [
+            TextNode("This is text with an ", text_type_text),
+            TextNode("image", text_type_image, "https://i.imgur.com/zjjcJKZ.png"),
+            TextNode(" and another ", text_type_text),
+            TextNode(
+                "second image", text_type_image, "https://i.imgur.com/3elNhQu.png"
+            ),
+        ]
+        self.assertEqual(expected, split_nodes_image([node]))
+
+    def test_equal_image_last(self):
+        node = TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)",
+            text_type_text,
+        )
+        expected = [
+            TextNode("This is text with an ", text_type_text),
+            TextNode("image", text_type_image, "https://i.imgur.com/zjjcJKZ.png"),
+        ]
+        self.assertEqual(expected, split_nodes_image([node]))
+
+    def test_equal_image_first(self):
+        node = TextNode(
+            "![image](https://i.imgur.com/zjjcJKZ.png) this is text",
+            text_type_text,
+        )
+        expected = [
+            TextNode("image", text_type_image, "https://i.imgur.com/zjjcJKZ.png"),
+            TextNode(" this is text", text_type_text),
+        ]
+        self.assertEqual(expected, split_nodes_image([node]))
+
+    if __name__ == "__main__":
+        unittest.main()
+
+
+class TestSplitNodesLink(unittest.TestCase):
+    def test_equal_two_link(self):
+        node = TextNode(
+            "This is text with an [image](https://i.imgur.com/zjjcJKZ.png) and another [second image](https://i.imgur.com/3elNhQu.png)",
+            text_type_text,
+        )
+        expected = [
+            TextNode("This is text with an ", text_type_text),
+            TextNode("image", text_type_link, "https://i.imgur.com/zjjcJKZ.png"),
+            TextNode(" and another ", text_type_text),
+            TextNode("second image", text_type_link, "https://i.imgur.com/3elNhQu.png"),
+        ]
+        self.assertEqual(expected, split_nodes_link([node]))
+
+    def test_equal_link_last(self):
+        node = TextNode(
+            "This is text with an [image](https://i.imgur.com/zjjcJKZ.png)",
+            text_type_text,
+        )
+        expected = [
+            TextNode("This is text with an ", text_type_text),
+            TextNode("image", text_type_link, "https://i.imgur.com/zjjcJKZ.png"),
+        ]
+        self.assertEqual(expected, split_nodes_link([node]))
+
+    def test_equal_link_first(self):
+        node = TextNode(
+            "[image](https://i.imgur.com/zjjcJKZ.png) this is text",
+            text_type_text,
+        )
+        expected = [
+            TextNode("image", text_type_link, "https://i.imgur.com/zjjcJKZ.png"),
+            TextNode(" this is text", text_type_text),
+        ]
+        self.assertEqual(expected, split_nodes_link([node]))
 
     if __name__ == "__main__":
         unittest.main()
