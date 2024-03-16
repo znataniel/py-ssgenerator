@@ -15,6 +15,7 @@ from inline_md_parsing import (
     extract_markdown_images,
     split_nodes_image,
     split_nodes_link,
+    text_to_textnodes,
 )
 
 
@@ -243,6 +244,58 @@ class TestSplitNodesLink(unittest.TestCase):
             TextNode(" this is text", text_type_text),
         ]
         self.assertEqual(expected, split_nodes_link([node]))
+
+    if __name__ == "__main__":
+        unittest.main()
+
+
+class TestTxtToTxtnode(unittest.TestCase):
+    def test_mix_1(self):
+        self.maxDiff = None
+        text = "This is **text** with an *italic* word and a `code block` and an ![image](https://i.imgur.com/zjjcJKZ.png) and a [link](https://boot.dev)"
+        expected = [
+            TextNode("This is ", text_type_text),
+            TextNode("text", text_type_bold),
+            TextNode(" with an ", text_type_text),
+            TextNode("italic", text_type_italic),
+            TextNode(" word and a ", text_type_text),
+            TextNode("code block", text_type_code),
+            TextNode(" and an ", text_type_text),
+            TextNode("image", text_type_image, "https://i.imgur.com/zjjcJKZ.png"),
+            TextNode(" and a ", text_type_text),
+            TextNode("link", text_type_link, "https://boot.dev"),
+        ]
+        self.assertEqual(expected, text_to_textnodes(text))
+
+    def test_mix_2(self):
+        self.maxDiff = None
+        text = "This is **text** with **another bold** word and another **BOOOLD** and a `code block` and an ![image](https://i.imgur.com/zjjcJKZ.png) and a [link](https://boot.dev)"
+        expected = [
+            TextNode("This is ", text_type_text),
+            TextNode("text", text_type_bold),
+            TextNode(" with ", text_type_text),
+            TextNode("another bold", text_type_bold),
+            TextNode(" word and another ", text_type_text),
+            TextNode("BOOOLD", text_type_bold),
+            TextNode(" and a ", text_type_text),
+            TextNode("code block", text_type_code),
+            TextNode(" and an ", text_type_text),
+            TextNode("image", text_type_image, "https://i.imgur.com/zjjcJKZ.png"),
+            TextNode(" and a ", text_type_text),
+            TextNode("link", text_type_link, "https://boot.dev"),
+        ]
+        self.assertEqual(expected, text_to_textnodes(text))
+
+    def test_no_text_type(self):
+        self.maxDiff = None
+        text = "**text another bold BOOOLD**`code block`![image](https://i.imgur.com/zjjcJKZ.png)[link](https://boot.dev)"
+        expected = [
+            TextNode("text another bold BOOOLD", text_type_bold),
+            TextNode("code block", text_type_code),
+            TextNode("image", text_type_image, "https://i.imgur.com/zjjcJKZ.png"),
+            TextNode("link", text_type_link, "https://boot.dev"),
+        ]
+        self.assertEqual(expected, text_to_textnodes(text))
 
     if __name__ == "__main__":
         unittest.main()
