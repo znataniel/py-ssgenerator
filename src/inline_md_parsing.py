@@ -5,7 +5,7 @@ import re
 def split_nodes_delimiter(old_nodes: list[TextNode], delimiter, text_type):
     nodes_split = []
     for on in old_nodes:
-        if delimiter not in on.text or not isinstance(on, TextNode):
+        if delimiter not in on.text or on.text_type != text_type_text:
             nodes_split.append(on)
             continue
 
@@ -17,18 +17,19 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter, text_type):
         delimiter_has_closed = 1
         while delimiter in aux_split[1]:
             aux_split = aux_split[1].split(delimiter, maxsplit=1)
-            nodes_split.append(
-                TextNode(
-                    aux_split[0],
-                    text_type if delimiter_has_closed % 2 else on.text_type,
+            if aux_split[0]:
+                nodes_split.append(
+                    TextNode(
+                        aux_split[0],
+                        text_type if delimiter_has_closed % 2 else text_type_text,
+                    )
                 )
-            )
             delimiter_has_closed += 1
 
         if delimiter_has_closed % 2:
             raise Exception(f"Invalid markdown syntax: closing {delimiter} not found")
 
-        if len(aux_split[1]):
+        if aux_split[1]:
             nodes_split.append(TextNode(aux_split[1], on.text_type))
     return nodes_split
 
