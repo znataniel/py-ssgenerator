@@ -6,7 +6,14 @@ from block_md_parsing import (
 
 class TestMd2Blocks(unittest.TestCase):
     def test_sample(self):
-        md = "# This is a heading\n\nThis is a paragraph of text. It has some **bold** and *italic* words inside of it.\n\n* This is a list item\n* This is another list item"
+        md = """
+# This is a heading
+
+This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+
+* This is a list item
+* This is another list item
+"""
         expected = [
             "# This is a heading",
             "This is a paragraph of text. It has some **bold** and *italic* words inside of it.",
