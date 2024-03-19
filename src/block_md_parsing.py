@@ -49,7 +49,23 @@ def block_to_block_type(block: str):
 
 
 def markdown_to_html_node(markdown):
-    pass
+    html_nodes = []
+    markdown_blocks = markdown_to_blocks(markdown)
+    for block in markdown_blocks:
+        block_type = block_to_block_type(block)
+        if block_type == block_type_para:
+            html_nodes.append(para_block_md2html(block))
+        if block_type == block_type_heading:
+            html_nodes.append(heading_block_md2html(block))
+        if block_type == block_type_code:
+            html_nodes.append(code_block_md2html(block))
+        if block_type == block_type_quote:
+            html_nodes.append(quote_block_md2html(block))
+        if block_type == block_type_ul:
+            html_nodes.append(ul_block_md2html(block))
+        if block_type == block_type_ol:
+            html_nodes.append(ol_block_md2html(block))
+    return ParentNode("div", html_nodes)
 
 
 def para_block_md2html(block: str):
