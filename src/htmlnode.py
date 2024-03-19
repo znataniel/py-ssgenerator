@@ -24,7 +24,7 @@ class HTMLNode:
             children_str = children_str[:-1]
         else:
             children_str = self.children
-        return f"HTMLNode\ntag: {self.tag}\nvalue: {self.value}\nchildren:{children_str}\nprops: {self.props_to_html()}"
+        return f"HTMLNode\ntag: {self.tag}\nvalue: {self.value}\nchildren:{children_str}\nprops: {self.props_to_html()}\n"
 
 
 class LeafNode(HTMLNode):
