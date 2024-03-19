@@ -1,4 +1,7 @@
 import re
+from htmlnode import ParentNode, LeafNode
+from inline_md_parsing import text_to_textnodes
+from textnode import text_node_to_html_node
 
 
 def markdown_to_blocks(markdown: str):
@@ -43,3 +46,61 @@ def block_to_block_type(block: str):
         ):
             return block_type_ol
     return block_type_para
+
+
+def markdown_to_html_node(markdown):
+    pass
+
+
+def para_block_md2html(block: str):
+    text_nodes = text_to_textnodes(block)
+    leaf_nodes = [text_node_to_html_node(textnode) for textnode in text_nodes]
+    return ParentNode("p", leaf_nodes)
+
+
+def heading_block_md2html(block: str):
+    split = block.split(maxsplit=1)
+    heading_level = len(split[0])
+    if heading_level in range(0, 7):
+        text_nodes = text_to_textnodes(split[1])
+        leaf_nodes = [text_node_to_html_node(textnode) for textnode in text_nodes]
+        return ParentNode(f"h{heading_level}", leaf_nodes)
+
+
+def code_block_md2html(block: str):
+    return LeafNode("code", block.strip("`"))
+
+
+def quote_block_md2html(block: str):
+    lines_split = block.split("\n")
+    clean_lines = [line.lstrip("> ") for line in lines_split]
+    clean_text = "\n".join(clean_lines)
+    text_nodes = text_to_textnodes(clean_text)
+    leaf_nodes = [text_node_to_html_node(textnode) for textnode in text_nodes]
+    return ParentNode("blockquote", leaf_nodes)
+
+
+def ul_block_md2html(block: str):
+    lines_split = block.split("\n")
+    clean_lines = [line.lstrip("*- ") for line in lines_split]
+    ul_li_elements = []
+    for line in clean_lines:
+        line_to_txtnodes = text_to_textnodes(line)
+        line_leaf_nodes = [
+            text_node_to_html_node(__line) for __line in line_to_txtnodes
+        ]
+        ul_li_elements.append(ParentNode("li", line_leaf_nodes))
+    return ParentNode("ul", ul_li_elements)
+
+
+def ol_block_md2html(block: str):
+    lines_split = block.split("\n")
+    clean_lines = [line.lstrip("1234567890. ") for line in lines_split]
+    ol_li_elements = []
+    for line in clean_lines:
+        line_to_txtnodes = text_to_textnodes(line)
+        line_leaf_nodes = [
+            text_node_to_html_node(__line) for __line in line_to_txtnodes
+        ]
+        ol_li_elements.append(ParentNode("li", line_leaf_nodes))
+    return ParentNode("ol", ol_li_elements)
