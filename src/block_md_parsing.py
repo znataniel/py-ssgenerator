@@ -3,19 +3,18 @@ from htmlnode import ParentNode, LeafNode
 from inline_md_parsing import text_to_textnodes
 from textnode import text_node_to_html_node
 
-
-def markdown_to_blocks(markdown: str):
-    splits = markdown.split("\n\n")
-    splits_stripped = list(map(lambda block: block.strip("\n "), splits))
-    return list(filter(lambda block: block != "" and block != "\n", splits_stripped))
-
-
 block_type_para = "paragraph"
 block_type_heading = "heading"
 block_type_code = "code"
 block_type_quote = "quote"
 block_type_ul = "unordered_list"
 block_type_ol = "ordered_list"
+
+
+def markdown_to_blocks(markdown: str):
+    splits = markdown.split("\n\n")
+    splits_stripped = list(map(lambda block: block.strip("\n "), splits))
+    return list(filter(lambda block: block != "" and block != "\n", splits_stripped))
 
 
 def block_to_block_type(block: str):
