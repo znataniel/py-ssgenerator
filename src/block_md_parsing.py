@@ -68,7 +68,8 @@ def markdown_to_html_node(markdown):
 
 
 def para_block_md2html(block: str):
-    text_nodes = text_to_textnodes(block)
+    block_wo_newlines = " ".join(block.split("\n"))
+    text_nodes = text_to_textnodes(block_wo_newlines)
     leaf_nodes = [text_node_to_html_node(textnode) for textnode in text_nodes]
     return ParentNode("p", leaf_nodes)
 
@@ -76,23 +77,32 @@ def para_block_md2html(block: str):
 def heading_block_md2html(block: str):
     split = block.split(maxsplit=1)
     heading_level = len(split[0])
-    if heading_level in range(0, 7):
-        text_nodes = text_to_textnodes(split[1])
-        leaf_nodes = [text_node_to_html_node(textnode) for textnode in text_nodes]
-        return ParentNode(f"h{heading_level}", leaf_nodes)
+    if heading_level not in range(0, 7):
+        raise ValueError(f"Invalid heading level: {heading_level}"))
+    text_nodes = text_to_textnodes(split[1])
+    leaf_nodes = [text_node_to_html_node(textnode) for textnode in text_nodes]
+    return ParentNode(f"h{heading_level}", leaf_nodes)
 
 
 def code_block_md2html(block: str):
-    return LeafNode("code", block.strip("`"))
+    if not block.startswith("```") and not block.endswith("```"):
+        raise ValueError("Invalid code block syntax")
+    stripped_block = block.strip("`")
+    text_nodes = text_to_textnodes(stripped_block)
+    leaf_nodes = [text_node_to_html_node(textnode) for textnode in text_nodes]
+    return ParentNode("code", leaf_nodes)
 
 
 def quote_block_md2html(block: str):
     lines_split = block.split("\n")
+    if any([not line.startswith("> ") for line in lines_split]):
+        raise ValueError("Invalid quote block syntax")
     clean_lines = [line.lstrip("> ") for line in lines_split]
     clean_text = "\n".join(clean_lines)
     text_nodes = text_to_textnodes(clean_text)
     leaf_nodes = [text_node_to_html_node(textnode) for textnode in text_nodes]
-    return ParentNode("blockquote", leaf_nodes)
+    code_node = ParentNode("blockquote", leaf_nodes)
+    return ParentNode("pre", [code_node])
 
 
 def ul_block_md2html(block: str):

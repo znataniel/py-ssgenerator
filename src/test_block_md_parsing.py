@@ -8,6 +8,7 @@ from block_md_parsing import (
     block_type_quote,
     block_type_ul,
     block_type_ol,
+    markdown_to_html_node,
 )
 
 
@@ -109,9 +110,6 @@ class TestBlockType(unittest.TestCase):
         ]
         self.assertEqual(expected, [block_to_block_type(bl) for bl in blocks])
 
-    if __name__ == "__main__":
-        unittest.main()
-
     def test_ul(self):
         blocks = [
             "* single element",
@@ -160,3 +158,83 @@ element
         blocks = ["Lorem ipsum sit amet, qui adipisicing minim sint cupidatat."]
         expected = [block_type_para]
         self.assertEqual(expected, [block_to_block_type(bl) for bl in blocks])
+
+    if __name__ == "__main__":
+        unittest.main()
+
+
+class TestMd2HtmlNode(unittest.TestCase):
+    def test_mix1(self):
+        md = """### This is a heading
+
+* This is element 1 of ul
+* This is element 2 of ul
+* This is element 3 of ul
+* This is element 4 of ul
+* This is element 5 of ul
+
+And this is a regular paragraph with `inline code`"""
+        expected = "<div><h3>This is a heading</h3><ul><li>This is element 1 of ul</li><li>This is element 2 of ul</li><li>This is element 3 of ul</li><li>This is element 4 of ul</li><li>This is element 5 of ul</li></ul><p>And this is a regular paragraph with <code>inline code</code></p></div>"
+        self.assertEqual(expected, markdown_to_html_node(md).to_html())
+
+    def test_mix2(self):
+        md = """### This is a heading
+
+1. This is element 1 of ul
+2. This is element 2 of ul
+3. This is element 3 of ul
+4. This is element 4 of ul
+5. This is element 5 of ul
+
+And this is a regular paragraph with `inline code`"""
+        expected = "<div><h3>This is a heading</h3><ol><li>This is element 1 of ul</li><li>This is element 2 of ul</li><li>This is element 3 of ul</li><li>This is element 4 of ul</li><li>This is element 5 of ul</li></ol><p>And this is a regular paragraph with <code>inline code</code></p></div>"
+        self.assertEqual(expected, markdown_to_html_node(md).to_html())
+
+    def test_mix2(self):
+        self.maxDiff = None
+        md = """### This is a heading
+
+* This is element 1 of ul
+* This is element 2 of ul
+* This is element 3 of ul
+* This is element 4 of ul
+* This is element 5 of ul
+
+1. This is element 1 of ol
+2. This is element 2 of ol
+3. This is element 3 of ol
+4. This is element 4 of ol
+5. This is element 5 of ol
+
+And this is a regular paragraph with `inline code`, some **bold text**,
+some *italic text*, an ![image](https://image.url)
+and a [link, just for fun.](https://justfor.fun)"""
+        # expected = "<div><h3>This is a heading</h3><ol><li>This is element 1 of ul</li><li>This is element 2 of ul</li><li>This is element 3 of ul</li><li>This is element 4 of ul</li><li>This is element 5 of ul</li></ol><p>And this is a regular paragraph with <code>inline code</code></p></div>"
+        expected = """<div>
+<h3>This is a heading</h3>
+<ul>
+<li>This is element 1 of ul</li>
+<li>This is element 2 of ul</li>
+<li>This is element 3 of ul</li>
+<li>This is element 4 of ul</li>
+<li>This is element 5 of ul</li>
+</ul>
+<ol>
+<li>This is element 1 of ol</li>
+<li>This is element 2 of ol</li>
+<li>This is element 3 of ol</li>
+<li>This is element 4 of ol</li>
+<li>This is element 5 of ol</li>
+</ol>
+<p>
+And this is a regular paragraph with <code>inline code</code>, some <b>bold text</b>,
+ some <i>italic text</i>, an <img src="https://image.url" alt="image"></img>
+ and a <a href="https://justfor.fun">link, just for fun.</a>
+</p>
+</div>"""
+        self.assertEqual(
+            "".join(expected.split("\n")), markdown_to_html_node(md).to_html()
+        )
+
+    if __name__ == "__main__":
+        unittest.main()
