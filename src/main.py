@@ -1,14 +1,22 @@
-from textnode import TextNode
+import os
+import shutil
+from website_generation import (
+    logger,
+    copy_all_to_target,
+    generate_page,
+)
 
 
 def main():
-    my_textnode = TextNode("This is a text node.", "bold", "https://www.boot.dev")
-    my_other_textnode = TextNode(
-        "This is another text node.", "bold", "https://www.gnu.org"
-    )
-    print(my_textnode)
-    print(my_other_textnode)
-    print(f"{my_textnode} == {my_other_textnode}? {my_textnode == my_other_textnode}")
+    static_path = "./static"
+    public_path = "./public"
+
+    logger(f"Cleaning public directory at {public_path}")
+    if len(os.listdir(public_path)):
+        shutil.rmtree(public_path)
+
+    copy_all_to_target(static_path, public_path)
+    generate_page("./content/index.md", "./template.html", "./public")
 
 
 main()
