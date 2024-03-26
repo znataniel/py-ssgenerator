@@ -78,7 +78,7 @@ def heading_block_md2html(block: str):
     split = block.split(maxsplit=1)
     heading_level = len(split[0])
     if heading_level not in range(0, 7):
-        raise ValueError(f"Invalid heading level: {heading_level}"))
+        raise ValueError(f"Invalid heading level: {heading_level}")
     text_nodes = text_to_textnodes(split[1])
     leaf_nodes = [text_node_to_html_node(textnode) for textnode in text_nodes]
     return ParentNode(f"h{heading_level}", leaf_nodes)
@@ -90,7 +90,8 @@ def code_block_md2html(block: str):
     stripped_block = block.strip("`")
     text_nodes = text_to_textnodes(stripped_block)
     leaf_nodes = [text_node_to_html_node(textnode) for textnode in text_nodes]
-    return ParentNode("code", leaf_nodes)
+    code_block = ParentNode("code", leaf_nodes)
+    return ParentNode("pre", [code_block])
 
 
 def quote_block_md2html(block: str):
@@ -107,7 +108,7 @@ def quote_block_md2html(block: str):
 
 def ul_block_md2html(block: str):
     lines_split = block.split("\n")
-    clean_lines = [line.lstrip("*- ") for line in lines_split]
+    clean_lines = [line[2:] for line in lines_split]
     ul_li_elements = []
     for line in clean_lines:
         line_to_txtnodes = text_to_textnodes(line)
