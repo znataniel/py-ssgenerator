@@ -18,7 +18,14 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter, text_type):
             continue
         splits = on.text.split(delimiter)
         if not len(splits) % 2:
-            raise Exception(f"Invalid markdown syntax: closing {delimiter} not found")
+            raise Exception(
+                f"""
+                Invalid markdown syntax: closing {delimiter} not found in
+                vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+                {on.text}
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                """
+            )
         for i in range(len(splits)):
             if not splits[i]:
                 continue
