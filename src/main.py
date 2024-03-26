@@ -3,7 +3,7 @@ import shutil
 from website_generation import (
     logger,
     copy_all_to_target,
-    generate_page,
+    generate_pages_recursive,
 )
 
 
@@ -16,7 +16,7 @@ def main():
         shutil.rmtree(public_path)
 
     copy_all_to_target(static_path, public_path)
-    generate_page("./content/index.md", "./template.html", "./public")
+    generate_pages_recursive("./content", "./template.html", "./public")
 
 
 main()
