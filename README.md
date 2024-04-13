@@ -20,3 +20,9 @@ The idea is to keep a simple static site generator with added features that will
 
 In short, clone the repo, place your content on the corresponding *content* and *static* directories and run the main.sh script.
 The project includes default content for demostration purposes, aswell as a HTML template and CSS stylesheet.
+
+```sh
+git clone "https://github.com/znataniel/py-ssgenerator.git"
+cd py-ssgenerator
+./main.sh
+```
