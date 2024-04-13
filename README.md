@@ -10,7 +10,7 @@ A project I could regularly use and expand based on my needs.
 
 ### Goal
 
-The idea is to keep a simple static site generator with added features that will eventually come, features soon to come are:
+The idea is to keep a simple static site generator with added features that will eventually come, said features are:
 
 - Improved parsing engine: that supports nested in-line blocks and better handles consecutive character delimiters without any spaces in between.
 - Live preview: the addition of a live refresh feature to the server, re-rendering the site with every change to improve the writing workflow.
